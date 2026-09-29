@@ -236,6 +236,18 @@
     .mobile-actions .secondary { background:transparent; border:1px solid #cfc8bf; }
     .mobile-actions .primary { background:#292724; }
   }
+  .export-overlay[hidden] { display:none; }
+  .export-overlay { position:fixed; inset:0; z-index:1400; display:grid; place-items:center; padding:20px; background:rgba(27,25,23,.68); }
+  .export-dialog { width:min(100%,390px); max-height:calc(100dvh - 40px); overflow:auto; padding:18px; background:var(--ui-bg); box-shadow:0 18px 50px rgba(0,0,0,.22); }
+  .export-dialog-head { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
+  .export-dialog h2 { margin:0; font-size:17px; font-weight:600; letter-spacing:.04em; }
+  .export-close { width:32px; height:32px; flex:0 0 auto; border:1px solid #cfc8bf; border-radius:0; background:transparent; font-size:20px; font-weight:400; line-height:1; }
+  .export-image { display:block; width:min(100%,220px); max-height:42dvh; margin:0 auto 12px; object-fit:contain; }
+  .export-help { margin:0 0 14px; color:#625c54; font-size:12px; line-height:1.6; }
+  .export-actions { display:flex; gap:8px; }
+  .export-actions button { flex:1; height:40px; border-radius:0; font-size:12px; }
+  .export-actions button[hidden] { display:none; }
+  .export-status { min-height:1.5em; margin:10px 0 0; color:#8b4b44; font-size:12px; }
 
   /* Subtle foreground falling decoration */
   .falling-foreground {
@@ -585,6 +597,22 @@
       <div class="drop-note">可把照片直接拖到卡片上替換</div>
     </div>
   </main>
+</div>
+
+<div id="exportOverlay" class="export-overlay" role="presentation" hidden>
+  <div class="export-dialog" role="dialog" aria-modal="true" aria-labelledby="exportTitle" aria-describedby="exportHelp">
+    <div class="export-dialog-head">
+      <h2 id="exportTitle">圖片已準備好</h2>
+      <button id="exportCloseBtn" class="export-close" type="button" aria-label="關閉">×</button>
+    </div>
+    <img id="exportImage" class="export-image" alt="匯出的結婚卡圖片" />
+    <p id="exportHelp" class="export-help">點「分享圖片」，再從 iPhone 選單選「儲存影像」，就能存進相簿。</p>
+    <div class="export-actions">
+      <button id="downloadFileBtn" class="secondary" type="button">下載檔案</button>
+      <button id="shareImageBtn" class="primary" type="button">分享圖片</button>
+    </div>
+    <p id="exportStatus" class="export-status" role="status" aria-live="polite"></p>
+  </div>
 </div>
 
 <script>
@@ -1236,7 +1264,77 @@
   }
   ['resetBtn','mobileResetBtn'].forEach(id => $(id).addEventListener('click', resetCard));
 
-  async function downloadCard() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (isIOS) $('mobileDownloadBtn').textContent = '儲存圖片';
+  let exportPng = null;
+  let exportImageUrl = null;
+
+  function downloadPng(png) {
+    const a = document.createElement('a');
+    const url = URL.createObjectURL(png);
+    a.href = url;
+    a.download = 'wedding-card.png';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+
+  function closeExportDialog() {
+    $('exportOverlay').hidden = true;
+    $('exportImage').removeAttribute('src');
+    if (exportImageUrl) URL.revokeObjectURL(exportImageUrl);
+    exportImageUrl = null;
+    exportPng = null;
+    $('mobileDownloadBtn').focus();
+  }
+
+  function showExportDialog(png) {
+    exportPng = png;
+    exportImageUrl = URL.createObjectURL(png);
+    $('exportImage').src = exportImageUrl;
+    $('exportStatus').textContent = '';
+    const file = new File([png], 'wedding-card.png', { type:'image/png' });
+    const canShareImage = typeof navigator.share === 'function' &&
+      typeof navigator.canShare === 'function' && navigator.canShare({ files:[file] });
+    $('shareImageBtn').hidden = !canShareImage;
+    $('exportHelp').textContent = canShareImage
+      ? '點「分享圖片」，再從 iPhone 選單選「儲存影像」，就能存進相簿。'
+      : '可長按上方圖片嘗試儲存影像，或點「下載檔案」。';
+    $('exportOverlay').hidden = false;
+    (canShareImage ? $('shareImageBtn') : $('downloadFileBtn')).focus();
+  }
+
+  $('shareImageBtn').addEventListener('click', async () => {
+    if (!exportPng) return;
+    const file = new File([exportPng], 'wedding-card.png', { type:'image/png' });
+    const button = $('shareImageBtn');
+    button.disabled = true;
+    try {
+      await navigator.share({ files:[file] });
+      closeExportDialog();
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        console.error('Image sharing failed:', error);
+        $('exportStatus').textContent = '無法開啟分享選單。可長按圖片儲存，或改用「下載檔案」。';
+      }
+    } finally {
+      button.disabled = false;
+    }
+  });
+  $('downloadFileBtn').addEventListener('click', () => {
+    if (!exportPng) return;
+    downloadPng(exportPng);
+    closeExportDialog();
+  });
+  $('exportCloseBtn').addEventListener('click', closeExportDialog);
+  $('exportOverlay').addEventListener('click', event => {
+    if (event.target === $('exportOverlay')) closeExportDialog();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !$('exportOverlay').hidden) closeExportDialog();
+  });
+
+  async function downloadCard(event) {
+    const useShareFlow = isIOS && event.currentTarget.id === 'mobileDownloadBtn';
     const buttons = [$('downloadBtn'), $('mobileDownloadBtn')];
     buttons.forEach(button => button.disabled = true);
     try {
@@ -1267,11 +1365,8 @@
         const png = await new Promise((resolve, reject) => {
           canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('PNG encoding failed')), 'image/png');
         });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(png);
-        a.download = 'wedding-card.png';
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        if (useShareFlow) showExportDialog(png);
+        else downloadPng(png);
       } finally {
         URL.revokeObjectURL(url);
       }
