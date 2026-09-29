@@ -105,7 +105,7 @@
   .primary { background:#222; color:white; }
   .secondary { background:#f1efec; color:#333; }
   .stage { display:flex; align-items:flex-start; justify-content:center; min-width:0; }
-  .preview-wrap { width:min(100%, 720px); }
+  .preview-wrap { width:min(100%, 720px, calc(80dvh - 64px)); }
   .preview-toolbar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px; color:#777; font-size:12px; }
   .preview-toolbar-actions { display:flex; align-items:center; gap:10px; }
   .preview-expand-button { display:none; }
@@ -454,7 +454,7 @@
 
     <section class="group mobile-panel" data-mobile-panel="decor">
       <div class="group-title-row">
-        <div class="group-title">底部圖案</div>
+        <label class="group-title" for="markEnabled">底部圖案</label>
         <input id="markEnabled" class="round-check" type="checkbox" checked aria-label="顯示底部圖案" title="顯示／隱藏底部圖案">
       </div>
       <div class="row2">
@@ -1206,7 +1206,10 @@
   $('customColorsEnabled').addEventListener('change', updateTheme);
   ['customBgBottom','customText','customAccent','customVignette'].forEach(id => $(id).addEventListener('input', updateTheme));
   $('markEnabled').addEventListener('change', updateMark);
-  $('markStyle').addEventListener('change', updateMark);
+  $('markStyle').addEventListener('change', () => {
+    $('markEnabled').checked = true;
+    updateMark();
+  });
   $('markPosition').addEventListener('change', updatePositions);
   $('markSize').addEventListener('input', () => { updateValues(); updatePositions(); });
   $('hashPosition').addEventListener('change', updatePositions);
