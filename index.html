@@ -112,6 +112,9 @@
   .preview { width:100%; aspect-ratio:4/5; display:block; filter:drop-shadow(0 16px 28px rgba(0,0,0,.12)); border-radius:18px; }
   .drop-note { text-align:center; font-size:11px; color:#999; margin-top:8px; }
   .small { font-size:11px; color:#8b8b8b; margin-top:8px; line-height:1.45; }
+  .font-choice-label { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+  .font-sample { max-width:58%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#403b36; font-size:19px; font-weight:400; line-height:1.2; }
+  .font-sample.is-loading, .font-sample.is-error { color:#8b8277; font-family:inherit !important; font-size:11px; }
   .mobile-tabs, .mobile-actions { display:none; }
   @media (max-width: 860px) {
     html, body { height:100%; }
@@ -390,7 +393,7 @@
       <label>自訂一句話</label><input id="quote" type="text" value="瑟瑟當道，自攻自受">
       <label>字級倍率</label>
       <div class="range-row"><input id="textScale" type="range" min="80" max="120" value="100"><span id="textScaleV" class="range-value">100%</span></div>
-      <label>主要字體</label>
+      <label class="font-choice-label" for="fontStyle"><span>主要字體</span><span id="mainFontSample" class="font-sample" aria-hidden="true">沐桑喜帖</span></label>
       <select id="fontStyle">
         <option value="serif">典雅襯線體</option>
         <option value="sans">現代黑體</option>
@@ -401,7 +404,7 @@
         <option value="starpanda">星光小熊貓體</option>
         <option value="proper">Proper Script</option>
       </select>
-      <label>自訂一句話字體</label>
+      <label class="font-choice-label" for="quoteFont"><span>自訂一句話字體</span><span id="quoteFontSample" class="font-sample" aria-hidden="true">瑟瑟當道</span></label>
       <select id="quoteFont">
         <option value="serif">典雅襯線體</option>
         <option value="sans">現代黑體</option>
@@ -859,6 +862,31 @@
     svg.style.borderRadius = Math.max(8, Math.round(r * 0.48)) + 'px';
   }
 
+  let fontSampleVersion = 0;
+  function updateFontSample(id, mode, family, text, version) {
+    const sample = $(id);
+    sample.style.fontFamily = family;
+    sample.classList.remove('is-loading', 'is-error');
+    sample.textContent = text;
+    const bundledFamily = bundledFontModes[mode];
+    if (!bundledFamily) return;
+    const fontSpec = `400 28px "${bundledFamily}"`;
+    sample.classList.add('is-loading');
+    sample.textContent = '字體載入中…';
+    document.fonts.load(fontSpec, text).then(faces => {
+      if (!faces.length) throw new Error(`${bundledFamily} unavailable`);
+      if (version !== fontSampleVersion) return;
+      sample.classList.remove('is-loading');
+      sample.textContent = text;
+    }).catch(error => {
+      if (version !== fontSampleVersion) return;
+      sample.classList.remove('is-loading');
+      sample.classList.add('is-error');
+      sample.textContent = '字體載入失敗';
+      console.warn('Bundled font load failed:', error);
+    });
+  }
+
   function setFont() {
     const mode = $('fontStyle').value;
     const quoteMode = $('quoteFont').value;
@@ -884,7 +912,9 @@
     $('dateText').setAttribute('font-weight', '400');
     $('hashText').setAttribute('font-weight', '400');
     $('quoteText').setAttribute('font-weight', '400');
-    loadSelectedFonts().catch(error => console.warn('Bundled font load failed:', error));
+    const version = ++fontSampleVersion;
+    updateFontSample('mainFontSample', mode, names, '沐桑喜帖', version);
+    updateFontSample('quoteFontSample', quoteMode, fontFamilies[quoteMode] || serif, '瑟瑟當道', version);
   }
 
   function wrapQuote(text, scale) {
