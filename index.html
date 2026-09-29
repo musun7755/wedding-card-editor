@@ -9,35 +9,35 @@
 <style>
   @font-face {
     font-family: 'ChenYuluoyanWeb';
-    src: url('./assets/fonts/ChenYuluoyan-2.0-Thin.ttf') format('truetype');
+    src: url('./assets/fonts/ChenYuluoyan-2.0-Thin.woff2') format('woff2');
     font-style: normal;
     font-weight: 400;
     font-display: swap;
   }
   @font-face {
     font-family: 'OpenHuninnWeb';
-    src: url('./assets/fonts/jf-openhuninn-2.1.ttf') format('truetype');
+    src: url('./assets/fonts/jf-openhuninn-2.1.woff2') format('woff2');
     font-style: normal;
     font-weight: 400;
     font-display: swap;
   }
   @font-face {
     font-family: 'GlowSansSCWeb';
-    src: url('./assets/fonts/GlowSansSC-Condensed-Regular.otf') format('opentype');
+    src: url('./assets/fonts/GlowSansSC-Condensed-Regular.woff2') format('woff2');
     font-style: normal;
     font-weight: 400;
     font-display: swap;
   }
   @font-face {
     font-family: 'StarPandaKidsWeb';
-    src: url('./assets/fonts/StarPandaKidsBeta2.1.otf') format('opentype');
+    src: url('./assets/fonts/StarPandaKidsBeta2.1.woff2') format('woff2');
     font-style: normal;
     font-weight: 400;
     font-display: swap;
   }
   @font-face {
     font-family: 'ProperScriptWeb';
-    src: url('./assets/fonts/ProperScript-Regular.ttf') format('truetype');
+    src: url('./assets/fonts/ProperScript-Regular.woff2') format('woff2');
     font-style: normal;
     font-weight: 400;
     font-display: swap;
@@ -661,11 +661,11 @@
   };
 
   const bundledFontFiles = {
-    ChenYuluoyanWeb: './assets/fonts/ChenYuluoyan-2.0-Thin.ttf',
-    OpenHuninnWeb: './assets/fonts/jf-openhuninn-2.1.ttf',
-    GlowSansSCWeb: './assets/fonts/GlowSansSC-Condensed-Regular.otf',
-    StarPandaKidsWeb: './assets/fonts/StarPandaKidsBeta2.1.otf',
-    ProperScriptWeb: './assets/fonts/ProperScript-Regular.ttf'
+    ChenYuluoyanWeb: './assets/fonts/ChenYuluoyan-2.0-Thin.woff2',
+    OpenHuninnWeb: './assets/fonts/jf-openhuninn-2.1.woff2',
+    GlowSansSCWeb: './assets/fonts/GlowSansSC-Condensed-Regular.woff2',
+    StarPandaKidsWeb: './assets/fonts/StarPandaKidsBeta2.1.woff2',
+    ProperScriptWeb: './assets/fonts/ProperScript-Regular.woff2'
   };
 
   const bundledFontModes = {
@@ -673,6 +673,25 @@
     starpanda:'StarPandaKidsWeb', proper:'ProperScriptWeb'
   };
   const fontDataCache = new Map();
+
+  function warmBundledFonts() {
+    const loadAll = () => Object.keys(bundledFontFiles).forEach(family => {
+      document.fonts.load(`400 28px "${family}"`, '字體測試').catch(error => {
+        console.warn('Bundled font load failed:', family, error);
+      });
+    });
+    if (!('serviceWorker' in navigator)) {
+      loadAll();
+      return;
+    }
+    navigator.serviceWorker.register('./font-cache-sw.js')
+      .then(() => navigator.serviceWorker.ready)
+      .then(loadAll)
+      .catch(error => {
+        console.warn('Font cache unavailable:', error);
+        loadAll();
+      });
+  }
 
   async function loadSelectedFonts() {
     const selected = new Set([$('fontStyle').value, $('quoteFont').value]);
@@ -694,7 +713,7 @@
         for (let i = 0; i < bytes.length; i += 0x8000) {
           parts.push(String.fromCharCode(...bytes.subarray(i, i + 0x8000)));
         }
-        return `data:font/${file.endsWith('.otf') ? 'otf' : 'ttf'};base64,${btoa(parts.join(''))}`;
+        return `data:font/woff2;base64,${btoa(parts.join(''))}`;
       }).catch(error => {
         fontDataCache.delete(family);
         throw error;
@@ -708,9 +727,8 @@
     const families = [...selected].map(mode => bundledFontModes[mode]).filter(Boolean);
     if (!families.length) return;
     const rules = await Promise.all(families.map(async family => {
-      const file = bundledFontFiles[family];
       const source = await fontDataUrl(family);
-      return `@font-face{font-family:"${family}";src:url("${source}") format("${file.endsWith('.otf') ? 'opentype' : 'truetype'}");font-style:normal;font-weight:400}`;
+      return `@font-face{font-family:"${family}";src:url("${source}") format("woff2");font-style:normal;font-weight:400}`;
     }));
     const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
     style.textContent = rules.join('\n');
@@ -1448,6 +1466,7 @@
   updateText();
   updateTheme();
   updateVignetteOpacity();
+  warmBundledFonts();
 })();
 </script>
 
