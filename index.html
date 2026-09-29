@@ -77,7 +77,12 @@
   input[type="file"] { width:100%; font-size:12px; }
   input[type="range"] { width:100%; accent-color:#8c6d50; }
   .range-row { display:grid; grid-template-columns:1fr 46px; align-items:center; gap:8px; }
+  .range-row.has-edit { grid-template-columns:minmax(0,1fr) 68px; }
   .range-value { text-align:right; font-size:11px; color:#777; font-variant-numeric:tabular-nums; }
+  .range-value-edit { display:flex; align-items:center; gap:2px; color:#777; font-size:12px; }
+  .range-value-edit input { width:100%; min-width:0; height:34px; padding:0 4px; border:1px solid #dedbd6; border-radius:7px; background:#fff; color:#333; font-size:13px; font-variant-numeric:tabular-nums; text-align:right; outline:none; appearance:textfield; }
+  .range-value-edit input:focus { border-color:#bba58e; box-shadow:0 0 0 3px rgba(154,118,80,.10); }
+  .range-value-edit input::-webkit-inner-spin-button, .range-value-edit input::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
   .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
   .toggle-row { display:flex; align-items:center; gap:8px; margin:10px 0 2px; font-size:12px; color:#555; }
   .toggle-row input { width:auto; margin:0; }
@@ -370,13 +375,13 @@
       <div class="group-title">照片 <span id="photoRatioHint" style="font-weight:400;color:#96918a;">（建議 4:3 / 3:2）</span></div>
       <input id="photoInput" type="file" accept="image/*" />
       <label>照片縮放</label>
-      <div class="range-row"><input id="zoom" type="range" min="100" max="220" value="100"><span id="zoomV" class="range-value">100%</span></div>
+      <div class="range-row has-edit"><input id="zoom" type="range" min="100" max="220" value="100" aria-label="照片縮放"><span class="range-value-edit"><input id="zoomV" type="number" min="100" max="220" step="1" value="100" inputmode="numeric" aria-label="照片縮放百分比"><span>%</span></span></div>
       <label>水平位置</label>
-      <div class="range-row"><input id="posX" type="range" min="-100" max="100" value="0"><span id="posXV" class="range-value">0</span></div>
+      <div class="range-row has-edit"><input id="posX" type="range" min="-100" max="100" value="0" aria-label="水平位置"><span class="range-value-edit"><input id="posXV" type="number" min="-100" max="100" step="1" value="0" aria-label="水平位置數值"></span></div>
       <label>垂直位置</label>
-      <div class="range-row"><input id="posY" type="range" min="-100" max="100" value="0"><span id="posYV" class="range-value">0</span></div>
+      <div class="range-row has-edit"><input id="posY" type="range" min="-100" max="100" value="0" aria-label="垂直位置"><span class="range-value-edit"><input id="posYV" type="number" min="-100" max="100" step="1" value="0" aria-label="垂直位置數值"></span></div>
       <label>卡片圓角</label>
-      <div class="range-row"><input id="cornerRadius" type="range" min="0" max="64" value="38"><span id="cornerRadiusV" class="range-value">38</span></div>
+      <div class="range-row has-edit"><input id="cornerRadius" type="range" min="0" max="64" value="38" aria-label="卡片圓角"><span class="range-value-edit"><input id="cornerRadiusV" type="number" min="0" max="64" step="1" value="38" inputmode="numeric" aria-label="卡片圓角數值"></span></div>
     </section>
 
     <section class="group mobile-panel" data-mobile-panel="text">
@@ -432,7 +437,7 @@
       </select>
       <div id="vignetteControls" style="display:none;">
         <label>暈影濃度</label>
-        <div class="range-row"><input id="vignetteOpacity" type="range" min="20" max="100" value="72"><span id="vignetteOpacityV" class="range-value">72%</span></div>
+        <div class="range-row"><input id="vignetteOpacity" type="range" min="20" max="200" value="72"><span id="vignetteOpacityV" class="range-value">72%</span></div>
       </div>
     </section>
 
@@ -518,20 +523,20 @@
           </linearGradient>
           <linearGradient id="customVignetteHorizontal" x1="0" y1="0" x2="1" y2="0">
             <stop id="customHVig0" offset="0%" stop-color="#ffffff" stop-opacity="0"/>
-            <stop id="customHVig1" offset="30%" stop-color="#ffffff" stop-opacity="0"/>
-            <stop id="customHVig2" offset="68%" stop-color="#ffffff" stop-opacity="0.24"/>
+            <stop id="customHVig1" offset="20%" stop-color="#ffffff" stop-opacity="0.24"/>
+            <stop id="customHVig2" offset="60%" stop-color="#ffffff" stop-opacity="0.64"/>
             <stop id="customHVig3" offset="100%" stop-color="#ffffff" stop-opacity="0.78"/>
           </linearGradient>
           <linearGradient id="vignetteBlackHorizontal" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stop-color="#000000" stop-opacity="0"/>
-            <stop offset="30%" stop-color="#000000" stop-opacity="0"/>
-            <stop offset="68%" stop-color="#000000" stop-opacity="0.22"/>
+            <stop offset="20%" stop-color="#000000" stop-opacity="0.22"/>
+            <stop offset="60%" stop-color="#000000" stop-opacity="0.58"/>
             <stop offset="100%" stop-color="#000000" stop-opacity="0.70"/>
           </linearGradient>
           <linearGradient id="vignetteWhiteHorizontal" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
-            <stop offset="30%" stop-color="#ffffff" stop-opacity="0"/>
-            <stop offset="68%" stop-color="#ffffff" stop-opacity="0.24"/>
+            <stop offset="20%" stop-color="#ffffff" stop-opacity="0.24"/>
+            <stop offset="60%" stop-color="#ffffff" stop-opacity="0.64"/>
             <stop offset="100%" stop-color="#ffffff" stop-opacity="0.78"/>
           </linearGradient>
           <linearGradient id="vignetteBlack" x1="0" y1="1" x2="0" y2="0">
@@ -855,7 +860,7 @@
 
   function updateCornerRadius() {
     const r = +$('cornerRadius').value;
-    $('cornerRadiusV').textContent = r;
+    $('cornerRadiusV').value = r;
     $('cardClipRect').setAttribute('rx', r);
     $('cardClipRect').setAttribute('ry', r);
     $('cardSurface').setAttribute('rx', r);
@@ -1132,9 +1137,10 @@
     if (theme.vignette) {
       controls.style.display = '';
       if (isSplit) {
-        vig.setAttribute('x', m.splitX);
+        const vignetteStartX = m.splitX - m.splitW * 0.25;
+        vig.setAttribute('x', vignetteStartX);
         vig.setAttribute('y', m.cardY);
-        vig.setAttribute('width', m.splitW);
+        vig.setAttribute('width', m.cardX + m.cardW - vignetteStartX);
         vig.setAttribute('height', m.cardH);
         if (custom) vig.setAttribute('fill', 'url(#customVignetteHorizontal)');
         else vig.setAttribute('fill', theme.vignette === 'black' ? 'url(#vignetteBlackHorizontal)' : 'url(#vignetteWhiteHorizontal)');
@@ -1155,15 +1161,20 @@
     updateMark();
   }
 
+  const vignetteStops = ['customVignetteGradient','customVignetteHorizontal','vignetteBlackHorizontal','vignetteWhiteHorizontal','vignetteBlack','vignetteWhite']
+    .flatMap(id => [...$(id).querySelectorAll('stop')].map(stop => ({ stop, base: +stop.getAttribute('stop-opacity') })));
+
   function updateVignetteOpacity() {
     const theme = themes[$('themeSelect').value];
     const value = +$('vignetteOpacity').value;
     $('vignetteOpacityV').textContent = value + '%';
+    const strength = Math.max(1, value / 100);
+    vignetteStops.forEach(({ stop, base }) => stop.setAttribute('stop-opacity', String(Math.min(1, base * strength))));
     if (!theme.vignette) {
       $('vignetteOverlay').setAttribute('opacity', '0');
       return;
     }
-    $('vignetteOverlay').setAttribute('opacity', String(value / 100));
+    $('vignetteOverlay').setAttribute('opacity', String(Math.min(1, value / 100)));
   }
 
   function updateText() {
@@ -1175,13 +1186,13 @@
   }
 
   function updateValues() {
-    $('zoomV').textContent = $('zoom').value + '%';
-    $('posXV').textContent = $('posX').value;
-    $('posYV').textContent = $('posY').value;
+    $('zoomV').value = $('zoom').value;
+    $('posXV').value = $('posX').value;
+    $('posYV').value = $('posY').value;
     $('textScaleV').textContent = $('textScale').value + '%';
     $('quoteScaleV').textContent = $('quoteScale').value + '%';
     $('markSizeV').textContent = $('markSize').value + '%';
-    $('cornerRadiusV').textContent = $('cornerRadius').value;
+    $('cornerRadiusV').value = $('cornerRadius').value;
   }
 
   function loadPhoto(file) {
@@ -1204,6 +1215,21 @@
   $('photoInput').addEventListener('change', e => loadPhoto(e.target.files[0]));
   ['zoom','posX','posY','textScale','quoteScale'].forEach(id => $(id).addEventListener('input', () => { updateValues(); updateLayout(); }));
   $('cornerRadius').addEventListener('input', () => { updateValues(); updateCornerRadius(); });
+  [['zoom','zoomV'],['posX','posXV'],['posY','posYV'],['cornerRadius','cornerRadiusV']].forEach(([rangeId, editId]) => {
+    const range = $(rangeId), edit = $(editId);
+    const applyEdit = clamp => {
+      if (edit.value === '' || !Number.isFinite(edit.valueAsNumber)) {
+        if (clamp) edit.value = range.value;
+        return;
+      }
+      const raw = Math.round(edit.valueAsNumber);
+      if (!clamp && (raw < +range.min || raw > +range.max)) return;
+      range.value = String(Math.max(+range.min, Math.min(+range.max, raw)));
+      range.dispatchEvent(new Event('input', { bubbles:true }));
+    };
+    edit.addEventListener('input', () => applyEdit(false));
+    edit.addEventListener('change', () => applyEdit(true));
+  });
   ['name1','name2','date','hashtag','quote'].forEach(id => $(id).addEventListener('input', updateText));
   $('fontStyle').addEventListener('change', setFont);
   $('quoteFont').addEventListener('change', setFont);
