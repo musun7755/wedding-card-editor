@@ -1056,13 +1056,18 @@
     const markScales = { rose:0.58, bow1:0.138, bow3:0.150, bow4:0.070, hearts:0.132, xi:0.68, knot:0.68 };
     const markHalfWidths = { rose:32, bow1:271.5, bow3:726.5, bow4:723.5, hearts:254, xi:34, knot:48 };
     const markBottomExtents = { rose:68, bow1:274, bow3:473, bow4:457.5, hearts:282, xi:42, knot:24 };
+    // Several PNGs have transparent padding; align the visible artwork above the hashtag.
+    const markVisibleBottomExtents = { rose:68, bow1:176, bow3:178, bow4:330.5, hearts:100, xi:42, knot:16 };
     const markBottomNudges = { rose:10, bow1:10, bow3:14, bow4:11, hearts:14, xi:9, knot:9 };
     const markScaleFactor = (+$('markSize').value || 100) / 100;
     const activeStyle = $('markStyle').value;
     const activeScale = (markScales[activeStyle] || 0.58) * markScaleFactor;
     const activeHalfW = (markHalfWidths[activeStyle] || 40) * activeScale;
     const hashBaselineY = m.isSplit ? 1012 : 1278;
+    const samePosition = hashPos === markPos && !!$('hashtag').value.trim();
+    const hashFontSize = +$('hashText').getAttribute('font-size') || 25;
     const targetBottomY = hashBaselineY + 18;
+    const sharedMarkBottomY = hashBaselineY - hashFontSize * 1.05 - 12;
     const safeGap = m.isSplit ? 60 : 50;
     const regionLeft = m.isSplit ? m.splitX : m.cardX;
     const regionRight = m.cardX + m.cardW;
@@ -1074,7 +1079,9 @@
     ['rose','bow1','bow3','bow4','hearts','xi','knot'].forEach(style => {
       const el = $({ rose:'bottomRose', bow1:'bottomBow1', bow3:'bottomBow3', bow4:'bottomBow4', hearts:'bottomHearts', xi:'bottomXi', knot:'bottomKnot' }[style]);
       const scale = (markScales[style] || 0.58) * markScaleFactor;
-      const markY = targetBottomY - (markBottomExtents[style] || 40) * scale + (markBottomNudges[style] || 0);
+      const markY = samePosition
+        ? sharedMarkBottomY - (markVisibleBottomExtents[style] || 40) * scale
+        : targetBottomY - (markBottomExtents[style] || 40) * scale + (markBottomNudges[style] || 0);
       el.setAttribute('transform', `translate(${markX} ${markY}) scale(${scale})`);
     });
   }
