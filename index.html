@@ -1438,14 +1438,10 @@
       const m = getLayoutMetrics();
       const clone = svg.cloneNode(true);
       clone.removeAttribute('class');
-      clone.style.borderRadius = '0';
       clone.setAttribute('viewBox', `${m.cardX + 1} ${m.cardY + 1} ${m.cardW - 2} ${m.cardH - 2}`);
       clone.setAttribute('preserveAspectRatio', 'none');
       clone.setAttribute('width', String(m.viewW * exportScale));
       clone.setAttribute('height', String(m.viewH * exportScale));
-      // Export a fully covered rectangle so social apps cannot fill transparent corners.
-      clone.querySelector('#cardClipRect').setAttribute('rx', '0');
-      clone.querySelector('#cardClipRect').setAttribute('ry', '0');
       await embedSelectedFonts(clone);
       const xml = new XMLSerializer().serializeToString(clone);
       const blob = new Blob([xml], { type:'image/svg+xml;charset=utf-8' });
