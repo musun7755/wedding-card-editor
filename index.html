@@ -9,35 +9,40 @@
 <style>
   @font-face {
     font-family: 'ChenYuluoyanWeb';
-    src: url('./assets/fonts/ChenYuluoyan-2.0-Thin.woff2') format('woff2');
+    src: url('https://cdn.jsdelivr.net/gh/musun7755/wedding-card-editor@74cc700a9ba8f44a777de7fcf9e3a913b09df9fb/assets/fonts/ChenYuluoyan-2.0-Thin.woff2') format('woff2'),
+         url('./assets/fonts/ChenYuluoyan-2.0-Thin.woff2') format('woff2');
     font-style: normal;
     font-weight: 400;
     font-display: swap;
   }
   @font-face {
     font-family: 'OpenHuninnWeb';
-    src: url('./assets/fonts/jf-openhuninn-2.1.woff2') format('woff2');
+    src: url('https://cdn.jsdelivr.net/gh/musun7755/wedding-card-editor@74cc700a9ba8f44a777de7fcf9e3a913b09df9fb/assets/fonts/jf-openhuninn-2.1.woff2') format('woff2'),
+         url('./assets/fonts/jf-openhuninn-2.1.woff2') format('woff2');
     font-style: normal;
     font-weight: 400;
     font-display: swap;
   }
   @font-face {
     font-family: 'GlowSansSCWeb';
-    src: url('./assets/fonts/GlowSansSC-Condensed-Regular.woff2') format('woff2');
+    src: url('https://cdn.jsdelivr.net/gh/musun7755/wedding-card-editor@74cc700a9ba8f44a777de7fcf9e3a913b09df9fb/assets/fonts/GlowSansSC-Condensed-Regular.woff2') format('woff2'),
+         url('./assets/fonts/GlowSansSC-Condensed-Regular.woff2') format('woff2');
     font-style: normal;
     font-weight: 400;
     font-display: swap;
   }
   @font-face {
     font-family: 'StarPandaKidsWeb';
-    src: url('./assets/fonts/StarPandaKidsBeta2.1.woff2') format('woff2');
+    src: url('https://cdn.jsdelivr.net/gh/musun7755/wedding-card-editor@74cc700a9ba8f44a777de7fcf9e3a913b09df9fb/assets/fonts/StarPandaKidsBeta2.1.woff2') format('woff2'),
+         url('./assets/fonts/StarPandaKidsBeta2.1.woff2') format('woff2');
     font-style: normal;
     font-weight: 400;
     font-display: swap;
   }
   @font-face {
     font-family: 'ProperScriptWeb';
-    src: url('./assets/fonts/ProperScript-Regular.woff2') format('woff2');
+    src: url('https://cdn.jsdelivr.net/gh/musun7755/wedding-card-editor@74cc700a9ba8f44a777de7fcf9e3a913b09df9fb/assets/fonts/ProperScript-Regular.woff2') format('woff2'),
+         url('./assets/fonts/ProperScript-Regular.woff2') format('woff2');
     font-style: normal;
     font-weight: 400;
     font-display: swap;
@@ -660,54 +665,61 @@
     proper: '"ProperScriptWeb",' + serif
   };
 
-  const bundledFontFiles = {
-    ChenYuluoyanWeb: './assets/fonts/ChenYuluoyan-2.0-Thin.woff2',
-    OpenHuninnWeb: './assets/fonts/jf-openhuninn-2.1.woff2',
-    GlowSansSCWeb: './assets/fonts/GlowSansSC-Condensed-Regular.woff2',
-    StarPandaKidsWeb: './assets/fonts/StarPandaKidsBeta2.1.woff2',
-    ProperScriptWeb: './assets/fonts/ProperScript-Regular.woff2'
+  const bundledFontNames = {
+    ChenYuluoyanWeb: 'ChenYuluoyan-2.0-Thin.woff2',
+    OpenHuninnWeb: 'jf-openhuninn-2.1.woff2',
+    GlowSansSCWeb: 'GlowSansSC-Condensed-Regular.woff2',
+    StarPandaKidsWeb: 'StarPandaKidsBeta2.1.woff2',
+    ProperScriptWeb: 'ProperScript-Regular.woff2'
   };
+  const fontCdnBase = 'https://cdn.jsdelivr.net/gh/musun7755/wedding-card-editor@74cc700a9ba8f44a777de7fcf9e3a913b09df9fb/assets/fonts/';
+  const bundledFontFiles = Object.fromEntries(Object.entries(bundledFontNames).map(([family, name]) => [family, fontCdnBase + name]));
+  const bundledFontFallbackFiles = Object.fromEntries(Object.entries(bundledFontNames).map(([family, name]) => [family, './assets/fonts/' + name]));
 
   const bundledFontModes = {
     chenyu:'ChenYuluoyanWeb', huninn:'OpenHuninnWeb', glow:'GlowSansSCWeb',
     starpanda:'StarPandaKidsWeb', proper:'ProperScriptWeb'
   };
   const fontDataCache = new Map();
+  const fontWarmupPromises = new Map();
+
+  async function fetchBundledFont(family) {
+    const primary = bundledFontFiles[family];
+    const fallback = new URL(bundledFontFallbackFiles[family], document.baseURI).href;
+    try {
+      const response = await fetch(primary);
+      if (!response.ok) throw new Error(`${primary}: HTTP ${response.status}`);
+      return { url:primary, response };
+    } catch (error) {
+      const response = await fetch(fallback);
+      if (!response.ok) throw new Error(`${fallback}: HTTP ${response.status}`);
+      return { url:fallback, response };
+    }
+  }
 
   function warmBundledFonts() {
     const loadAll = () => Object.keys(bundledFontFiles).forEach(family => {
-      document.fonts.load(`400 28px "${family}"`, '字體測試').catch(error => {
+      const ready = document.fonts.load(`400 28px "${family}"`, '字體測試');
+      fontWarmupPromises.set(family, ready);
+      ready.catch(error => {
         console.warn('Bundled font load failed:', family, error);
       });
     });
-    if (!('serviceWorker' in navigator)) {
-      loadAll();
-      return;
-    }
-    navigator.serviceWorker.register('./font-cache-sw.js')
-      .then(() => navigator.serviceWorker.ready)
-      .then(loadAll)
-      .catch(error => {
-        console.warn('Font cache unavailable:', error);
-        loadAll();
-      });
+    requestAnimationFrame(loadAll);
+    if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistration('./').then(registration => registration?.unregister()).catch(() => {});
   }
 
   async function loadSelectedFonts() {
     const selected = new Set([$('fontStyle').value, $('quoteFont').value]);
     await Promise.all([...selected].map(mode => {
       const family = bundledFontModes[mode];
-      return family ? document.fonts.load(`400 28px "${family}"`) : Promise.resolve();
+      return family ? (fontWarmupPromises.get(family) || document.fonts.load(`400 28px "${family}"`)) : Promise.resolve();
     }));
   }
 
   function fontDataUrl(family) {
     if (!fontDataCache.has(family)) {
-      const file = bundledFontFiles[family];
-      fontDataCache.set(family, fetch(new URL(file, document.baseURI)).then(response => {
-        if (!response.ok) throw new Error(`${file}: HTTP ${response.status}`);
-        return response.arrayBuffer();
-      }).then(buffer => {
+      fontDataCache.set(family, fetchBundledFont(family).then(({ response }) => response.arrayBuffer()).then(buffer => {
         const bytes = new Uint8Array(buffer);
         const parts = [];
         for (let i = 0; i < bytes.length; i += 0x8000) {
@@ -897,7 +909,7 @@
     const fontSpec = `400 28px "${bundledFamily}"`;
     sample.classList.add('is-loading');
     sample.textContent = '字體載入中…';
-    document.fonts.load(fontSpec, text).then(faces => {
+    (fontWarmupPromises.get(bundledFamily) || document.fonts.load(fontSpec, text)).then(faces => {
       if (!faces.length) throw new Error(`${bundledFamily} unavailable`);
       if (version !== fontSampleVersion) return;
       sample.classList.remove('is-loading');
