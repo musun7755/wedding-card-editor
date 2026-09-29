@@ -880,12 +880,14 @@
     const rw = state.imgW * scale, rh = state.imgH * scale;
     const extraX = Math.max(0, rw - w), extraY = Math.max(0, rh - h);
     const px = +$('posX').value / 100, py = +$('posY').value / 100;
-    const ix = x - extraX / 2 - px * extraX / 2;
-    const iy = y - extraY / 2 - py * extraY / 2;
+    // Extend the photo beneath the clipping edge to avoid a hairline from pixel rounding.
+    const bleed = 2;
+    const ix = x - extraX / 2 - px * extraX / 2 - bleed;
+    const iy = y - extraY / 2 - py * extraY / 2 - bleed;
     photo.setAttribute('x', ix.toFixed(2));
     photo.setAttribute('y', iy.toFixed(2));
-    photo.setAttribute('width', rw.toFixed(2));
-    photo.setAttribute('height', rh.toFixed(2));
+    photo.setAttribute('width', (rw + bleed * 2).toFixed(2));
+    photo.setAttribute('height', (rh + bleed * 2).toFixed(2));
   }
 
   function updateCornerRadius() {
@@ -1436,9 +1438,14 @@
       const m = getLayoutMetrics();
       const clone = svg.cloneNode(true);
       clone.removeAttribute('class');
-      clone.setAttribute('viewBox', `${m.cardX} ${m.cardY} ${m.cardW} ${m.cardH}`);
+      clone.style.borderRadius = '0';
+      clone.setAttribute('viewBox', `${m.cardX + 1} ${m.cardY + 1} ${m.cardW - 2} ${m.cardH - 2}`);
+      clone.setAttribute('preserveAspectRatio', 'none');
       clone.setAttribute('width', String(m.viewW * exportScale));
       clone.setAttribute('height', String(m.viewH * exportScale));
+      // Export a fully covered rectangle so social apps cannot fill transparent corners.
+      clone.querySelector('#cardClipRect').setAttribute('rx', '0');
+      clone.querySelector('#cardClipRect').setAttribute('ry', '0');
       await embedSelectedFonts(clone);
       const xml = new XMLSerializer().serializeToString(clone);
       const blob = new Blob([xml], { type:'image/svg+xml;charset=utf-8' });
