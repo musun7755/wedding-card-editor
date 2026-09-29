@@ -391,9 +391,9 @@
         <div><label>位置</label><select id="hashPosition"><option value="left">左</option><option value="center">中</option><option value="right" selected>右</option></select></div>
       </div>
       <label>自訂一句話</label><input id="quote" type="text" value="瑟瑟當道，自攻自受">
-      <label>字級倍率</label>
+      <label>主要文字字級倍率</label>
       <div class="range-row"><input id="textScale" type="range" min="80" max="200" value="100"><span id="textScaleV" class="range-value">100%</span></div>
-      <label class="font-choice-label" for="fontStyle"><span>主要字體</span><span id="mainFontSample" class="font-sample" aria-hidden="true">沐桑喜帖</span></label>
+      <label class="font-choice-label" for="fontStyle"><span>主要字體</span><span id="mainFontSample" class="font-sample" aria-hidden="true">字體測試</span></label>
       <select id="fontStyle">
         <option value="serif">典雅襯線體</option>
         <option value="sans">現代黑體</option>
@@ -404,7 +404,9 @@
         <option value="starpanda">星光小熊貓體</option>
         <option value="proper">Proper Script</option>
       </select>
-      <label class="font-choice-label" for="quoteFont"><span>自訂一句話字體</span><span id="quoteFontSample" class="font-sample" aria-hidden="true">瑟瑟當道</span></label>
+      <label>自訂一句話字級倍率</label>
+      <div class="range-row"><input id="quoteScale" type="range" min="80" max="200" value="100"><span id="quoteScaleV" class="range-value">100%</span></div>
+      <label class="font-choice-label" for="quoteFont"><span>自訂一句話字體</span><span id="quoteFontSample" class="font-sample" aria-hidden="true">字體測試</span></label>
       <select id="quoteFont">
         <option value="serif">典雅襯線體</option>
         <option value="sans">現代黑體</option>
@@ -628,7 +630,7 @@
   const constants = { cardX:18, cardY:18, cardW:1044, cardH:1314, photoFrameY:18, photoFrameH:730, splitW:522, splitCenterX:801 };
   const defaults = {
     name1:'沐桑', name2:'沐桑', date:'3064/08/57', hashtag:'#沐沐桑桑', quote:'瑟瑟當道，自攻自受',
-    zoom:100, posX:0, posY:0, textScale:100, fontStyle:'serif', quoteFont:'serif', theme:'beige', customColors:false, markEnabled:true, markStyle:'rose', markPosition:'center', hashPosition:'right', markSize:100, cornerRadius:38, layout:'top-bottom'
+    zoom:100, posX:0, posY:0, textScale:100, quoteScale:100, fontStyle:'serif', quoteFont:'serif', theme:'beige', customColors:false, markEnabled:true, markStyle:'rose', markPosition:'center', hashPosition:'right', markSize:100, cornerRadius:38, layout:'top-bottom'
   };
 
   const themes = {
@@ -913,8 +915,8 @@
     $('hashText').setAttribute('font-weight', '400');
     $('quoteText').setAttribute('font-weight', '400');
     const version = ++fontSampleVersion;
-    updateFontSample('mainFontSample', mode, names, '沐桑喜帖', version);
-    updateFontSample('quoteFontSample', quoteMode, fontFamilies[quoteMode] || serif, '瑟瑟當道', version);
+    updateFontSample('mainFontSample', mode, names, '字體測試', version);
+    updateFontSample('quoteFontSample', quoteMode, fontFamilies[quoteMode] || serif, '字體測試', version);
   }
 
   function wrapQuote(text, scale) {
@@ -951,6 +953,7 @@
 
   function updateLayout() {
     const scale = +$('textScale').value / 100;
+    const quoteScale = +$('quoteScale').value / 100;
     const m = getLayoutMetrics();
     applyLayoutCanvas();
 
@@ -958,7 +961,7 @@
     $('name2Text').setAttribute('font-size', 46 * scale * 0.80);
     $('dateText').setAttribute('font-size', 30 * scale * 0.90);
     $('hashText').setAttribute('font-size', 25 * scale * 1.00);
-    $('quoteText').setAttribute('font-size', 28 * scale * 1.00);
+    $('quoteText').setAttribute('font-size', 28 * quoteScale * 1.00);
 
     if (m.isSplit) {
       const cx = m.splitCenterX;
@@ -1008,7 +1011,7 @@
       $('quoteText').dataset.baseY = 1164;
     }
 
-    wrapQuote($('quote').value, scale);
+    wrapQuote($('quote').value, quoteScale);
     updatePositions();
     fitPhoto();
     updateCornerRadius();
@@ -1178,6 +1181,7 @@
     $('posXV').textContent = $('posX').value;
     $('posYV').textContent = $('posY').value;
     $('textScaleV').textContent = $('textScale').value + '%';
+    $('quoteScaleV').textContent = $('quoteScale').value + '%';
     $('markSizeV').textContent = $('markSize').value + '%';
     $('cornerRadiusV').textContent = $('cornerRadius').value;
   }
@@ -1200,7 +1204,7 @@
   }
 
   $('photoInput').addEventListener('change', e => loadPhoto(e.target.files[0]));
-  ['zoom','posX','posY','textScale'].forEach(id => $(id).addEventListener('input', () => { updateValues(); updateLayout(); }));
+  ['zoom','posX','posY','textScale','quoteScale'].forEach(id => $(id).addEventListener('input', () => { updateValues(); updateLayout(); }));
   $('cornerRadius').addEventListener('input', () => { updateValues(); updateCornerRadius(); });
   ['name1','name2','date','hashtag','quote'].forEach(id => $(id).addEventListener('input', updateText));
   $('fontStyle').addEventListener('change', setFont);
@@ -1272,6 +1276,7 @@
     $('posX').value = defaults.posX;
     $('posY').value = defaults.posY;
     $('textScale').value = defaults.textScale;
+    $('quoteScale').value = defaults.quoteScale;
     $('fontStyle').value = defaults.fontStyle;
     $('quoteFont').value = defaults.quoteFont;
     $('layoutSelect').value = defaults.layout;
