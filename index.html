@@ -397,12 +397,11 @@
       <select id="fontStyle">
         <option value="serif">典雅襯線體</option>
         <option value="sans">現代黑體</option>
-        <option value="mixed">混搭（名字襯線／其他黑體）</option>
-        <option value="chenyu">辰宇落雁體</option>
-        <option value="huninn">jf open 粉圓</option>
-        <option value="glow">未來螢黑 Condensed</option>
-        <option value="starpanda">星光小熊貓體</option>
-        <option value="proper">Proper Script</option>
+        <option value="huninn">圓圓黑體</option>
+        <option value="glow">瘦瘦方體</option>
+        <option value="chenyu">大人手寫</option>
+        <option value="starpanda">小孩手寫</option>
+        <option value="proper">小孩手寫 2</option>
       </select>
       <label>自訂一句話字級倍率</label>
       <div class="range-row"><input id="quoteScale" type="range" min="80" max="200" value="100"><span id="quoteScaleV" class="range-value">100%</span></div>
@@ -410,11 +409,11 @@
       <select id="quoteFont">
         <option value="serif">典雅襯線體</option>
         <option value="sans">現代黑體</option>
-        <option value="chenyu">辰宇落雁體</option>
-        <option value="huninn">jf open 粉圓</option>
-        <option value="glow">未來螢黑 Condensed</option>
-        <option value="starpanda">星光小熊貓體</option>
-        <option value="proper">Proper Script</option>
+        <option value="huninn">圓圓黑體</option>
+        <option value="glow">瘦瘦方體</option>
+        <option value="chenyu">大人手寫</option>
+        <option value="starpanda">小孩手寫</option>
+        <option value="proper">小孩手寫 2</option>
       </select>
     </section>
 
@@ -440,7 +439,7 @@
 
     <section class="group advanced-group mobile-panel" data-mobile-panel="style">
       <details class="advanced" id="advancedSettings">
-        <summary>進階設定</summary>
+        <summary>自訂顏色</summary>
         <div class="advanced-body">
           <label class="toggle-row"><input id="customColorsEnabled" type="checkbox"> 啟用自訂配色</label>
           <div class="color-grid">
@@ -893,20 +892,12 @@
     const mode = $('fontStyle').value;
     const quoteMode = $('quoteFont').value;
 
-    let names = serif;
-    let rest = serif;
-    if (mode === 'mixed') {
-      names = serif;
-      rest = sans;
-    } else {
-      names = fontFamilies[mode] || serif;
-      rest = names;
-    }
+    const names = fontFamilies[mode] || serif;
 
     $('name1Text').setAttribute('font-family', names);
     $('name2Text').setAttribute('font-family', names);
-    $('dateText').setAttribute('font-family', rest);
-    $('hashText').setAttribute('font-family', rest);
+    $('dateText').setAttribute('font-family', names);
+    $('hashText').setAttribute('font-family', names);
     $('quoteText').setAttribute('font-family', fontFamilies[quoteMode] || serif);
 
     $('name1Text').setAttribute('font-weight', '400');
