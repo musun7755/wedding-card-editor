@@ -463,6 +463,13 @@
     </section>
 
     <section class="group mobile-panel" data-mobile-panel="decor">
+      <label for="centerMotif">名字中間圖案</label>
+      <select id="centerMotif">
+        <option value="rings">戒指</option>
+        <option value="umbrella">雨傘</option>
+        <option value="heart-lock">愛心鎖</option>
+        <option value="heart-shine">發光愛心</option>
+      </select>
       <div class="group-title-row">
         <label class="group-title" for="markEnabled">底部圖案</label>
         <input id="markEnabled" class="round-check" type="checkbox" checked aria-label="顯示底部圖案" title="顯示／隱藏底部圖案">
@@ -568,8 +575,32 @@
           <text id="name1Text" x="458" y="896" text-anchor="end" fill="#262523" font-size="46" letter-spacing="2"></text>
           <line id="leftLine" x1="478" y1="881" x2="510" y2="881" stroke="#b28a61" stroke-width="1.5"/>
           <g id="ringMark" transform="translate(540 880)" stroke="#b28a61" fill="none" stroke-width="3">
+            <g data-center-motif="rings">
             <circle cx="-9" cy="0" r="19"/><circle cx="9" cy="0" r="19"/>
-            <path d="M -4 -24 L 0 -29 L 4 -24 L 0 -20 Z" fill="#b28a61" stroke="none"/>
+            <path d="M -4 -24 L 0 -29 L 4 -24 L 0 -20 Z" fill="currentColor" stroke="none"/>
+            </g>
+            <svg data-center-motif="umbrella" x="-28" y="-28" width="56" height="56" style="display:none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M8 30c4-12 12-18 24-18s20 6 24 18c-5-3-9-2-12 2-3-4-9-4-12 0-3-4-9-4-12 0-3-4-7-5-12-2Z"/>
+  <path d="M32 32v19c0 5 3 8 7 6 3-1 4-4 3-6"/>
+  <path d="M32 12c-5-3-6-7-3-9 2-1 3 0 4 2 1-2 3-3 5-2 3 2 1 6-6 9Z"/>
+  <path d="M54 8v5m-2.5-2.5h5"/>
+</svg>
+<svg data-center-motif="heart-lock" stroke="none" x="-28" y="-28" width="56" height="56" style="display:none" aria-hidden="true"  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M17 7C17 3.68629 15.0125 2 12 2C8.98754 2 7 3.68629 7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M12 12V14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M9.26556 20.6154L9.72058 20.0192L9.26556 20.6154ZM12 8.93062L11.4681 9.4594C11.6089 9.601 11.8003 9.68062 12 9.68062C12.1997 9.68062 12.3911 9.601 12.5319 9.4594L12 8.93062ZM14.7344 20.6154L15.1895 21.2116L14.7344 20.6154ZM9.72058 20.0192C8.35148 18.9742 6.86905 17.964 5.69244 16.6814C4.54161 15.4268 3.75 13.9756 3.75 12.0992H2.25C2.25 14.46 3.26713 16.2564 4.58706 17.6953C5.88121 19.1062 7.53156 20.2354 8.81054 21.2116L9.72058 20.0192ZM3.75 12.0992C3.75 10.2748 4.81485 8.7347 6.28482 8.08418C7.71357 7.4519 9.63741 7.61795 11.4681 9.4594L12.5319 8.40184C10.3127 6.16968 7.73658 5.8014 5.67779 6.7125C3.66023 7.60535 2.25 9.68634 2.25 12.0992H3.75ZM8.81054 21.2116C9.27099 21.563 9.76987 21.9413 10.2764 22.2279C10.7832 22.5146 11.3656 22.75 12 22.75V21.25C11.7344 21.25 11.4168 21.1496 11.015 20.9223C10.6129 20.6949 10.1946 20.3809 9.72058 20.0192L8.81054 21.2116ZM15.1895 21.2116C16.4684 20.2354 18.1188 19.1062 19.4129 17.6953C20.7329 16.2564 21.75 14.46 21.75 12.0992H20.25C20.25 13.9756 19.4584 15.4268 18.3076 16.6814C17.1309 17.964 15.6485 18.9742 14.2794 20.0192L15.1895 21.2116ZM21.75 12.0992C21.75 9.68634 20.3398 7.60535 18.3222 6.7125C16.2634 5.8014 13.6873 6.16968 11.4681 8.40184L12.5319 9.4594C14.3626 7.61795 16.2864 7.4519 17.7152 8.08418C19.1852 8.7347 20.25 10.2748 20.25 12.0992H21.75ZM14.2794 20.0192C13.8054 20.3809 13.3871 20.6949 12.985 20.9223C12.5832 21.1496 12.2656 21.25 12 21.25V22.75C12.6344 22.75 13.2168 22.5146 13.7236 22.2279C14.2301 21.9413 14.729 21.563 15.1895 21.2116L14.2794 20.0192Z" fill="currentColor"/>
+</svg>
+<svg data-center-motif="heart-shine" stroke="none" x="-28" y="-28" width="56" height="56" style="display:none" aria-hidden="true"  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 1.25C12.4142 1.25 12.75 1.58579 12.75 2V4C12.75 4.41421 12.4142 4.75 12 4.75C11.5858 4.75 11.25 4.41421 11.25 4V2C11.25 1.58579 11.5858 1.25 12 1.25Z" fill="currentColor"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12 8.89866C11.0286 8.17514 9.93707 8.07448 9.00898 8.50573C7.95333 8.99626 7.25 10.1171 7.25 11.3796C7.25 12.5983 7.75413 13.5245 8.38618 14.248C8.8836 14.8174 9.49698 15.297 10.0018 15.6917C10.1123 15.7782 10.2179 15.8608 10.3157 15.9391C10.5164 16.0999 10.7605 16.2953 11.0151 16.4465C11.269 16.5974 11.6065 16.75 12 16.75C12.3935 16.75 12.731 16.5974 12.9849 16.4465C13.2395 16.2953 13.4836 16.0999 13.6843 15.9391C13.7822 15.8607 13.8876 15.7783 13.9982 15.6917C14.503 15.297 15.1164 14.8174 15.6138 14.248C16.2459 13.5245 16.75 12.5983 16.75 11.3796C16.75 10.1171 16.0467 8.99626 14.991 8.50573C14.0629 8.07448 12.9714 8.17514 12 8.89866ZM9.64107 9.86605C9.14671 10.0958 8.75 10.6647 8.75 11.3796C8.75 12.1383 9.04976 12.7276 9.51582 13.2611C9.91036 13.7127 10.3834 14.0838 10.8818 14.4747C11.0044 14.5709 11.1288 14.6685 11.2537 14.7686C11.4683 14.9406 11.6318 15.0682 11.7811 15.1569C11.931 15.2459 11.9935 15.25 12 15.25C12.0065 15.25 12.069 15.2459 12.2189 15.1569C12.3682 15.0682 12.5317 14.9406 12.7463 14.7686C12.8713 14.6684 12.9955 14.571 13.1182 14.4747C13.6166 14.0838 14.0896 13.7127 14.4842 13.2611C14.9502 12.7276 15.25 12.1383 15.25 11.3796C15.25 10.6647 14.8533 10.0958 14.3589 9.86605C13.9153 9.65992 13.2539 9.66744 12.5446 10.4166C12.403 10.5662 12.206 10.651 12 10.651C11.794 10.651 11.597 10.5662 11.4554 10.4166C10.7461 9.66744 10.0847 9.65992 9.64107 9.86605Z" fill="currentColor"/>
+<path d="M12.75 20C12.75 19.5858 12.4142 19.25 12 19.25C11.5858 19.25 11.25 19.5858 11.25 20V22C11.25 22.4142 11.5858 22.75 12 22.75C12.4142 22.75 12.75 22.4142 12.75 22V20Z" fill="currentColor"/>
+<path d="M1.25 12C1.25 11.5858 1.58579 11.25 2 11.25H4C4.41421 11.25 4.75 11.5858 4.75 12C4.75 12.4142 4.41421 12.75 4 12.75H2C1.58579 12.75 1.25 12.4142 1.25 12Z" fill="currentColor"/>
+<path d="M20 11.25C19.5858 11.25 19.25 11.5858 19.25 12C19.25 12.4142 19.5858 12.75 20 12.75H22C22.4142 12.75 22.75 12.4142 22.75 12C22.75 11.5858 22.4142 11.25 22 11.25H20Z" fill="currentColor"/>
+<path d="M5.46967 18.5303C5.17678 18.2374 5.17678 17.7626 5.46967 17.4697L5.81272 17.1266C6.10561 16.8337 6.58048 16.8337 6.87338 17.1266C7.16627 17.4195 7.16627 17.8944 6.87338 18.1873L6.53033 18.5303C6.23744 18.8232 5.76256 18.8232 5.46967 18.5303Z" fill="currentColor"/>
+<path d="M17.1264 5.81293C16.8335 6.10582 16.8335 6.5807 17.1264 6.87359C17.4193 7.16648 17.8942 7.16648 18.1871 6.87359L18.5303 6.53033C18.8232 6.23744 18.8232 5.76256 18.5303 5.46967C18.2374 5.17678 17.7626 5.17678 17.4697 5.46967L17.1264 5.81293Z" fill="currentColor"/>
+<path d="M18.5303 18.5303C18.8232 18.2374 18.8232 17.7626 18.5303 17.4697L18.1873 17.1266C17.8944 16.8337 17.4195 16.8337 17.1266 17.1266C16.8337 17.4195 16.8337 17.8944 17.1266 18.1873L17.4697 18.5303C17.7626 18.8232 18.2374 18.8232 18.5303 18.5303Z" fill="currentColor"/>
+<path d="M6.87359 5.81293C7.16648 6.10582 7.16648 6.5807 6.87359 6.87359C6.5807 7.16648 6.10582 7.16648 5.81293 6.87359L5.46967 6.53033C5.17678 6.23744 5.17678 5.76256 5.46967 5.46967C5.76256 5.17678 6.23744 5.17678 6.53033 5.46967L6.87359 5.81293Z" fill="currentColor"/>
+</svg>
           </g>
           <line id="rightLine" x1="570" y1="881" x2="602" y2="881" stroke="#b28a61" stroke-width="1.5"/>
           <text id="name2Text" x="622" y="896" text-anchor="start" fill="#262523" font-size="46" letter-spacing="2"></text>
@@ -1123,6 +1154,13 @@
     });
   }
 
+  function updateCenterMotif() {
+    const selected = $('centerMotif').value;
+    $('ringMark').querySelectorAll('[data-center-motif]').forEach(motif => {
+      motif.style.display = motif.dataset.centerMotif === selected ? '' : 'none';
+    });
+  }
+
   function updateTheme() {
     updateCustomGradientDefs();
     const theme = themes[$('themeSelect').value];
@@ -1157,7 +1195,8 @@
     });
     ['leftLine','rightLine','quoteLine'].forEach(id => $(id).setAttribute('stroke', accentColor));
     $('ringMark').setAttribute('stroke', accentColor);
-    $('ringMark').querySelector('path').setAttribute('fill', accentColor);
+    $('ringMark').style.color = accentColor;
+    updateCenterMotif();
     svg.querySelectorAll('.mark-stroke').forEach(el => el.setAttribute('stroke', accentColor));
     svg.querySelectorAll('.mark-fill-accent').forEach(el => el.setAttribute('fill', accentColor));
     svg.querySelectorAll('.mark-fill-contrast').forEach(el => el.setAttribute('fill', textColor));
@@ -1271,6 +1310,7 @@
   $('customColorsEnabled').addEventListener('change', updateTheme);
   ['customBgBottom','customText','customAccent','customVignette'].forEach(id => $(id).addEventListener('input', updateTheme));
   $('markEnabled').addEventListener('change', updateMark);
+  $('centerMotif').addEventListener('change', updateCenterMotif);
   $('markStyle').addEventListener('change', () => {
     $('markEnabled').checked = true;
     updateMark();
@@ -1326,6 +1366,7 @@
   setMobileTab('photo');
 
   function resetCard() {
+    $('centerMotif').value = 'rings';
     $('name1').value = defaults.name1;
     $('name2').value = defaults.name2;
     $('date').value = defaults.date;
