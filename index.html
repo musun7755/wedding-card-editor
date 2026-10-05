@@ -1360,7 +1360,8 @@
   ['resetBtn','mobileResetBtn'].forEach(id => $(id).addEventListener('click', resetCard));
 
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  if (isIOS) $('mobileDownloadBtn').textContent = '儲存圖片';
+  const isMobileDevice = isIOS || /Android|Mobile/i.test(navigator.userAgent) || navigator.userAgentData?.mobile === true;
+  if (isMobileDevice) $('mobileDownloadBtn').textContent = '儲存圖片';
   let exportPng = null;
   let exportImageUrl = null;
 
@@ -1429,7 +1430,7 @@
   });
 
   async function downloadCard(event) {
-    const useShareFlow = isIOS && event.currentTarget.id === 'mobileDownloadBtn';
+    const useShareFlow = isMobileDevice && event.currentTarget.id === 'mobileDownloadBtn';
     const buttons = [$('downloadBtn'), $('mobileDownloadBtn')];
     buttons.forEach(button => button.disabled = true);
     try {
@@ -1461,8 +1462,20 @@
         const png = await new Promise((resolve, reject) => {
           canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('PNG encoding failed')), 'image/png');
         });
-        if (useShareFlow) showExportDialog(png);
-        else downloadPng(png);
+        if (useShareFlow) {
+          const file = new File([png], 'wedding-card.png', { type:'image/png' });
+          if (typeof navigator.share === 'function' && navigator.canShare?.({ files:[file] })) {
+            try {
+              await navigator.share({ files:[file] });
+            } catch (error) {
+              if (error.name !== 'AbortError') {
+                console.warn('Direct image sharing failed:', error);
+                showExportDialog(png);
+              }
+            }
+          } else if (isIOS) showExportDialog(png);
+          else downloadPng(png);
+        } else downloadPng(png);
       } finally {
         URL.revokeObjectURL(url);
       }
