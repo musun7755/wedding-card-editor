@@ -161,7 +161,8 @@
       border-bottom:1px solid #ded9d2;
       z-index:25;
     }
-    .preview-wrap { width:min(calc(100vw - 36px), clamp(190px, 28dvh, 240px)); }
+    .preview-wrap { width:min(100%, clamp(230px, 34dvh, 300px)); }
+    body.layout-split .preview-wrap { width:min(calc(100vw - 8px), 65dvh); flex-shrink:0; }
     .preview-toolbar { margin-bottom:6px; font-size:10px; letter-spacing:.02em; }
     .preview-expand-button { display:block; width:auto; height:30px; padding:0 9px; border:1px solid #cfc8bf; border-radius:0; background:transparent; color:#5f554a; font-size:11px; font-weight:500; white-space:nowrap; }
     .preview { filter:drop-shadow(0 10px 20px rgba(0,0,0,.10)); border-radius:14px; }
@@ -866,6 +867,7 @@
 
   function applyLayoutCanvas() {
     const m = getLayoutMetrics();
+    document.body.classList.toggle('layout-split', m.isSplit);
     svg.setAttribute('viewBox', `0 0 ${m.viewW} ${m.viewH}`);
     svg.style.aspectRatio = `${m.viewW} / ${m.viewH}`;
     $('outputSizeLabel').textContent = `${m.viewW * exportScale} × ${m.viewH * exportScale}`;
